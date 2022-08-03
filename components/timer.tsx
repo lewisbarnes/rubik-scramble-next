@@ -1,59 +1,229 @@
 import { NextPageContext } from 'next';
-import React from 'react'
+import React from 'react';
+import $ from 'jquery';
+import { stat } from 'fs';
+import { stringify } from 'querystring';
+
+interface Props {
+	stopCallback : Function;
+}
 
 interface State {
 	startTime : number;
-	time: string;
-	timerID : NodeJS.Timer | undefined;
+	endTime: number;
+	time: number;
+	lastTime: number;
+	bestTime: number;
 	running: boolean;
+	dnf: boolean;
 	inInspection: boolean;
+	keydown: boolean;
+	userInput: string;
+	validInput: boolean;
+	handler: Function;
+
 }
 
-export class Timer extends React.Component<{}, State> {
+export class Timer extends React.Component<Props, State> {
 
 	timerID !: NodeJS.Timer | undefined;
-	startTime : number = 0;
+	private timerRef : React.RefObject<HTMLParagraphElement>;
 
-	constructor(props: {}) {
+	constructor(props: Props) {
 		super(props);
 		this.state = {
-			startTime: Date.now(), 
-			time: '00.000',
-			timerID: undefined,
+			startTime: Date.now(),
+			endTime: Date.now() + 15000,
+			time: 0,
+			lastTime: 0,
+			bestTime: 0,
 			running: false,
-			inInspection: false
+			dnf: false,
+			inInspection: false,
+			keydown: false,
+			userInput: '',
+			validInput: true,
+			handler: props.stopCallback.bind(this)
 		}
-		this.startTime = Date.now();
+		props;
 		this.timerID = undefined;
+		this.timerRef = React.createRef<HTMLParagraphElement>();
 	}
 
-	getInitialProps({ req }: NextPageContext) {
+	componentDidMount() {
+		document.addEventListener('keydown', this.handleKeydown.bind(this), false);
 		
+		this.timerRef.current?.addEventListener('click', this.startStop.bind(this), false);
+		this.timerRef = React.createRef<HTMLParagraphElement>();
+		document.addEventListener('keyup', this.handleKeyup.bind(this), false);
 	}
+
 
 	componentWillUnmount() {
+		document.removeEventListener('keydown', this.handleKeydown.bind(this));
+		document.removeEventListener('keyup', this.handleKeyup.bind(this));
+		this.timerRef.current?.removeEventListener('click', this.startStop.bind(this), false);
 		clearInterval(this.timerID);
 	}
 
 	render() {
-		return <button className={`${this.state.inInspection ? 'text-green-400' : ''} text-9xl font-dseg7`} onClick={this.startStop.bind(this)}>{this.state.time}</button>
+		return (
+			<div>
+				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-400' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl sm:text-8xl md:text-9xl font-dseg7`}>
+					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.maskInput(this.state.userInput) : this.formatTime(this.state.time) }
+				</p>
+				<div className='pt-8'>
+					<p className='font-fira'>last: {this.formatTime(this.state.lastTime)}</p>
+					<p className='font-fira'>best: {this.formatTime(this.state.bestTime)}</p>
+				</div>
+			</div>
+		);
 	}
 
 	tick() {
-			if(this.state.running) {
-				this.setState((state, props) => ({ startTime: state.startTime, time: this.formatTime(Date.now() - state.startTime) , timerID: state.timerID, running: state.running,inInspection: state.inInspection}));
+		if(this.state.running) {
+			let time = (this.state.inInspection ? this.state.endTime : Date.now()) - (!this.state.inInspection ? this.state.startTime : Date.now());
+			console.log(time);
+			let inInspection = this.state.inInspection;
+			let running = this.state.running;
+			let dnf = this.state.dnf;
+			if(time <= 0) {
+				dnf = true;
 			}
+			
+			this.setState((state, props) => (
+				{ 
+					startTime: state.startTime, 
+					endTime: state.endTime, 
+					time: time,
+					lastTime: state.lastTime,
+					running: running,
+					dnf: dnf,
+					inInspection: inInspection, 
+					keydown: state.keydown,
+					userInput: state.userInput,
+					validInput: state.validInput,
+				}
+			));
+		}
+
+	}
+
+	handleKeydown(event: KeyboardEvent) {
+		let userInput = this.state.userInput;
+		let validInput = this.state.validInput;
+		if(this.state.keydown) { return; }
+		else if(event.key == ' ') {
+			userInput = '';
+			this.startStop();
+		} else if(event.key == 'Backspace') {
+			userInput = userInput.substring(0,userInput.length-1);
+			validInput = this.validateInput(userInput.padStart(7,'0'));
+		}
+		else if(isFinite(parseInt(event.key))  && userInput.length != 7) {
+			userInput += event.key;
+			validInput = this.validateInput(userInput.padStart(7,'0'));
+		}
+		this.setState((state, props) => (
+			{
+				startTime: state.startTime,
+				endTime: state.endTime, 
+				time: state.time,
+				lastTime: state.lastTime,
+				bestTime: state.bestTime,
+				running: state.running,
+				dnf: state.dnf,
+				inInspection: state.inInspection,
+				keydown: true,
+				userInput: userInput,
+				validInput: validInput,
+			}
+		));
+	}
+
+	handleKeyup() {
+		this.setState((state, _props) => (
+			{
+				startTime: state.startTime,
+				endTime: state.endTime, 
+				time: state.time,
+				lastTime: state.lastTime,
+				bestTime: state.bestTime,
+				running: state.running,
+				dnf: state.dnf,
+				inInspection: state.inInspection,
+				keydown: false,
+				userInput: state.userInput,
+				validInput: state.validInput,
+			}
+		));
+	}
+
+	maskInput(input: string) {
+		return input.padStart(7,'0').replace(/(\d{2})(\d{2})(\d{3})/, '$1:$2.$3');
+	}
+
+	validateInput(input: string) {
+		console.log(input)
+		return /[0-5]{1}[0-9]{1}[0-5]{1}[0-9]{1}[0-9]{3}/.test(input)
 	}
 
 	startStop() {
-		if(this.state.running) {
-			clearInterval(this.state.timerID);
+		let startTime = this.state.startTime;
+		let endTime = this.state.endTime;
+		let running = this.state.running;
+		let dnf = this.state.dnf;
+		let inInspection =  this.state.inInspection;
+		let lastTime = this.state.lastTime;
+		let bestTime = this.state.bestTime;
+		if(!running) {
+			if(!inInspection) {
+				console.log('start inspection');
+				startTime = Date.now();
+				endTime = Date.now() + 15000 ;
+				inInspection = true;
+			}
+			running = true;
+			this.timerID = setInterval(this.tick.bind(this), 10);
+		} else {
+			if(inInspection) {
+				if(dnf) {
+					console.log('dnf');
+					dnf = false;
+					inInspection = false;
+					startTime = Date.now();
+					endTime = Date.now() + 15000 ;
+					running = true;
+				}
+				else {
+					console.log('end inspection');
+					inInspection = false;
+				}
+			} else {
+				console.log('stop timer');
+				running = false;
+				lastTime = this.state.time;
+				bestTime = bestTime > 0 ? lastTime < bestTime ? lastTime : bestTime : lastTime;
+				this.props.stopCallback.bind(this)(lastTime);
+				console.log(this.state.time);
+
+			}
 		}
-		else {
-			this.timerID = setInterval(this.tick.bind(this), 1);
-		}
-		
-		this.setState((state, props) => ({ startTime: Date.now(), time: this.formatTime(Date.now() - state.startTime), timerID: this.timerID, running: !state.running, inInspection: state.inInspection}));
+		this.setState((state, _props) => (
+			{
+				startTime: startTime,
+				endTime: endTime, 
+				time: state.time,
+				lastTime: lastTime,
+				bestTime: bestTime,
+				running: running,
+				dnf: dnf,
+				inInspection: inInspection,
+				keydown: state.keydown,
+				userInput: '',
+				validInput: state.validInput,
+			}
+		));
 	}
 
 	formatTime(pMilliseconds : number) {

@@ -8,6 +8,7 @@ interface Props {
 	numScrambles : number;
 	mode: string;
 	scrambleCallback: Function;
+	hidden: boolean;
 }
 
 interface State {
@@ -50,10 +51,10 @@ export class ScrambleGen extends React.Component<Props, State> {
 
 	render() {
 		return (
-			<div className='p-6 flex flex-col items-center'>
+			<div className={`pb-6 flex flex-col items-center ${this.props.hidden ? 'hidden': ''}`}>
 					{
 						this.state.currentScrambles.map((scramble, i) => {
-							return <Scramble key={i} moves={ scramble } canHide={false} />
+							return <Scramble key={i} moves={ scramble } hidden={this.props.hidden} />
 						})
 					}
 			</div>

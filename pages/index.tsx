@@ -1,44 +1,58 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
 import React, { useRef } from 'react'
 import { useState } from 'react'
+import { NavMenu } from '../components/navMenu'
+import { NavButton } from '../components/navButton'
+
 import { ScrambleGen } from '../components/scrambleGen'
-import { SolveDisplay } from '../components/solveDisplay'
+import { SolveList } from '../components/solveList'
 import { Timer } from '../components/timer'
 import { Solve } from '../types/solve'
+import { Help } from '../components/help'
+import { Settings } from '../components/settings'
+import { About } from '../components/about'
 
-const Home: NextPage = () => {
+const RubikScramble: NextPage = () => {
 	let [mode, setMode] = useState('timer');
 	let [numScrambles, setNumScrambles] = useState(1);
 	let [solves, setSolves] = useState(new Array<Solve>);
 	let [currentScramble, setCurrentScramble] = useState(new Array<string>);
 	let scrambleGenElement =  useRef<ScrambleGen>(null);
-	let solvesElement = useRef<SolveDisplay>(null);
+	let solvesElement = useRef<SolveList>(null);
 	let [solvesVisible, setSolvesVisible] = useState(false);
 	return (
 		<div>
 			<Head>
 				<title>rubik-scramble</title>
 				<meta name="description" content="A timer for 3x3 twisty puzzles" />
-				<link rel="icon" href="/favicon.ico" />
+				<link rel="icon" href="/img/cube.png" />
 			</Head>
 
-			<main className="flex flex-col bg-black min-h-screen items-center caret-transparent">
-				<div id="header" className="mt-8 text-center mb-10 text-white">
-					<h2 id="header-title" className="font-fira text-2xl md:text-4xl">rubik-scramble</h2>
+			<main className="flex flex-col dark:bg-black min-h-screen items-center caret-transparent">
+				<button className="bg-slate-800/90 min-h-screen min-w-full absolute z-10 hidden">
+					<div className='z-50 max-w-48  dark:bg-black dark:text-white text-center'>
+						<h2 className='font-fira text-xl m-4'>help</h2>
+					</div>
+				</button>
+				<div id="header" className="mt-8 text-center mb-10 dark:text-white">
 				</div>
-				<div id="container" className='container flex-grow h-full px-8 text-center text-white'>
-					<ScrambleGen ref={scrambleGenElement} numScrambles={numScrambles} mode={mode} scrambleCallback={scrambleCallback}/>
-					{ mode == 'timer' ? <Timer stopCallback={timerStopCallback} /> : '' }
-					{ mode == 'timer' ? <SolveDisplay solves={solves}/> : ''}
+				<div id="container" className='container flex-grow h-full px-1 text-center dark:text-white'>
+					<ScrambleGen ref={scrambleGenElement} numScrambles={numScrambles} mode={mode} hidden={!(mode == 'scramble' || mode == 'timer') ? true : false} scrambleCallback={scrambleCallback} />
+					{mode == 'timer' ? <Timer stopCallback={timerStopCallback} /> : ''}
+					{mode == 'timer' ? <SolveList solves={solves} /> : ''}
+					{mode == 'help' ? <Help /> : ''}
+					{mode == 'settings' ? <Settings /> : ''}
+					{mode == 'about' ? <About /> : ''}
 				</div>
-				<div className='w-full text-white text-center m-4 font-fira'>
-					<button className={`${mode == 'timer' ? 'bg-white text-black' : 'text-white'} mx-2 p-2 rounded-md`} onClick={timerMode.bind(this)}>timer-mode</button>
-					<button className={`${mode == 'scramble' ? 'bg-white text-black' : 'text-white'} mx-2 p-2 rounded-md`} onClick={scrambleMode.bind(this)}>scramble-mode</button>
-				</div>
-				<div className='flex flex-col items-center pb-4'>
-				</div>
+				<NavMenu>
+					<NavButton label='timer' active={mode == 'timer' ? true : false} callback={() => { setMode('timer'); setNumScrambles(1) }} />
+					<NavButton label='scrambles' active={mode == 'scramble' ? true : false} callback={() => { setMode('scramble'); setNumScrambles(25) }} />
+					<NavButton label='solves' active={mode == 'solves' ? true : false} callback={() => { setMode('solves'); }} />
+					<NavButton label='help' active={mode == 'help' ? true : false} callback={() => { setMode('help'); }} />
+					<NavButton label='settings' active={mode == 'settings' ? true : false} callback={() => { setMode('settings'); }} />
+					<NavButton label='about' active={mode == 'about' ? true : false} callback={() => { setMode('about'); }} />
+				</NavMenu>
 			</main>
 		</div>
 	)
@@ -46,11 +60,6 @@ const Home: NextPage = () => {
 	function timerMode() {
 		setMode('timer');
 		setNumScrambles(1);
-	}
-
-	function scrambleMode() {
-		setMode('scramble');
-		setNumScrambles(25);
 	}
 
 	function timerStopCallback(time: number) {
@@ -64,4 +73,4 @@ const Home: NextPage = () => {
 	}
 }
 
-export default Home
+export default RubikScramble

@@ -1,8 +1,5 @@
-import { NextPageContext } from 'next';
 import React from 'react';
 import $ from 'jquery';
-import { stat } from 'fs';
-import { stringify } from 'querystring';
 
 interface Props {
 	stopCallback : Function;
@@ -68,14 +65,10 @@ export class Timer extends React.Component<Props, State> {
 
 	render() {
 		return (
-			<div>
-				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-400' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl sm:text-8xl md:text-9xl font-dseg7`}>
+			<div className='select-none'>
+				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl sm:text-8xl md:text-9xl font-dseg7`}>
 					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.maskInput(this.state.userInput) : this.formatTime(this.state.time) }
 				</p>
-				<div className='pt-8'>
-					<p className='font-fira'>last: {this.formatTime(this.state.lastTime)}</p>
-					<p className='font-fira'>best: {this.formatTime(this.state.bestTime)}</p>
-				</div>
 			</div>
 		);
 	}
@@ -119,6 +112,12 @@ export class Timer extends React.Component<Props, State> {
 		} else if(event.key == 'Backspace') {
 			userInput = userInput.substring(0,userInput.length-1);
 			validInput = this.validateInput(userInput.padStart(7,'0'));
+		}
+		else if(event.key == 'Enter') {
+			validInput = this.validateInput(userInput.padStart(7,'0'));
+			if(validInput) {
+				userInput = '';
+			}
 		}
 		else if(isFinite(parseInt(event.key))  && userInput.length != 7) {
 			userInput += event.key;

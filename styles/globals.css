@@ -12,3 +12,8 @@
   font-family: "fira-code";
   src: url("../public/fonts/FiraCode-Regular.ttf");
 }
+
+@font-face {
+  font-family: "35";
+  src: url("../public/fonts/3x5.ttf");
+}

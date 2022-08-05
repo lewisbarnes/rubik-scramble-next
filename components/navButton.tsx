@@ -1,12 +1,13 @@
+import { NextRouter, Router, useRouter, withRouter } from 'next/router';
 import React from 'react';
 
 interface Props {
 	label: string;
-	active: boolean;
-	callback: Function;
+	router: NextRouter;
+	routes: Array<string>;
 }
 
-export class NavButton extends React.Component<Props> {
+class NavButton extends React.Component<Props> {
 
 	constructor(props: Props) {
 		super(props);
@@ -22,9 +23,9 @@ export class NavButton extends React.Component<Props> {
 
 	render() {
 		return(
-			<li>
-				<button className={`${this.props.active ? 'dark:bg-white bg-black text-white dark:text-black' : 'text-black dark:text-white bg-white dark:bg-black hover:text-yellow-500'} p-2 rounded-md`} onClick={this.props.callback.bind(this)}>{this.props.label}</button>
-			</li>
+			<button className={`${this.props.routes.some(x => x == this.props.router.pathname) ? 'bg-black dark:bg-white text-white dark:text-black' : ''} rounded-md px-2`} onClick={() => { this.props.router.replace(this.props.routes[0])}}>{this.props.label}</button>
 		);
 	}
 }
+
+export default withRouter(NavButton);

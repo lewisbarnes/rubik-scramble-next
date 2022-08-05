@@ -4,25 +4,19 @@ interface Props {
 	children: React.ReactNode;
 }
 
-export class NavMenu extends React.Component<Props> {
+class NavMenuComponent extends React.Component<Props> {
 
 	constructor(props: Props) {
 		super(props);
 	}
 
-	componentDidMount() {
-
-	}
-	
-	componentDidUpdate(prevProps: Props) {
-
-	}
-
 	render() {
 		return(
-			<ul className='flex justify-between text-center m-4 font-fira'>
+			<div className='font-fira max-h-full flex flex-col md:flex-row flex-wrap px-28 space-x-2'>
 				{this.props.children}
-			</ul>
+			</div>
 		);
 	}
 }
+
+export default NavMenuComponent;

@@ -1,18 +1,14 @@
-import { NextPageContext } from 'next';
 import React from 'react';
-import $ from 'jquery';
-import { stat } from 'fs';
-import type  { Solve } from '../types/solve';
 
 interface Props {
-	moves: Array<string>;
+	moves: string;
 	hidden: boolean;
 }
 
 interface State {
 }
 
-export class Scramble extends React.Component<Props, State> {
+export class ScrambleComponent extends React.Component<Props, State> {
 	constructor(props: Props, state: State) {
 		super(props);
 	}
@@ -20,7 +16,7 @@ export class Scramble extends React.Component<Props, State> {
 	render() {
 		return (
 			<div className='text-center hover:select-all'>
-				<p className={ `${this.props.hidden ? 'hidden ' : ''} mb-1 ml-2 font-fira text-base md:text-md`}><span></span>{this.props.moves.map(x => x.padEnd(2, '\xa0')).join(' ')}</p>
+				<p className={ `${this.props.hidden ? 'hidden ' : ''} mb-1 ml-2 font-fira text-base dark:text-white md:text-md whitespace-pre-wrap`}>{this.props.moves.split(' ').map(x => x.padEnd(3, ' '))}</p>
 			</div>
 		);
 	}

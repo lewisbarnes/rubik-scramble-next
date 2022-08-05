@@ -2,21 +2,19 @@ import { NextPageContext } from 'next';
 import React from 'react';
 import $ from 'jquery';
 import { stat } from 'fs';
-import { Scramble } from './scramble';
+import { ScrambleComponent } from './scramble';
 
 interface Props {
 	numScrambles : number;
-	mode: string;
-	scrambleCallback: Function;
+	displaySingle: boolean;
 	hidden: boolean;
 }
 
 interface State {
-	currentScrambles: Array<Array<string>>;
-	handler: Function;
+	currentScrambles: Array<string>;
 }
 
-export class ScrambleGen extends React.Component<Props, State> {
+class ScrambleGeneratorComponent extends React.Component<Props, State> {
 
 	notationGroups : Array<Array<string>> = 
 	[
@@ -28,8 +26,7 @@ export class ScrambleGen extends React.Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {
-			currentScrambles: new Array<Array<string>>(),
-			handler: props.scrambleCallback.bind(this)
+			currentScrambles: new Array<string>()
 		}
 		props;
 	}
@@ -53,8 +50,9 @@ export class ScrambleGen extends React.Component<Props, State> {
 		return (
 			<div className={`pb-6 flex flex-col items-center ${this.props.hidden ? 'hidden': ''}`}>
 					{
-						this.state.currentScrambles.map((scramble, i) => {
-							return <Scramble key={i} moves={ scramble } hidden={this.props.hidden} />
+						this.props.displaySingle ? <ScrambleComponent key={1} moves={ this.state.currentScrambles[this.state.currentScrambles.length -1] ? this.state.currentScrambles[this.state.currentScrambles.length -1] : '' } hidden={this.props.hidden} /> :
+						this.state.currentScrambles.slice().map((scramble, i) => {
+							return <ScrambleComponent key={i} moves={ scramble } hidden={this.props.hidden} />
 						})
 					}
 			</div>
@@ -62,11 +60,10 @@ export class ScrambleGen extends React.Component<Props, State> {
 	}
 
 	generate() {
-		let scrambles = new Array<Array<string>>();
 		for(let i = 0; i < this.props.numScrambles; i++) {
 			let lastCol = this.notationGroups[0].length;
 			let beforeLastCol = this.notationGroups[0].length;
-			let scramble = new Array<string>();
+			let scramble = '';
 			for(let j = 0; j < 15; j++) {
 				let pickGroup = Math.floor(Math.random() * this.notationGroups.length);
 				let pickCol = Math.floor(Math.random() * this.notationGroups[pickGroup].length);
@@ -74,16 +71,29 @@ export class ScrambleGen extends React.Component<Props, State> {
 				while(pickCol == lastCol || isComutative && pickCol ==  beforeLastCol) {
 					pickCol = Math.floor(Math.random() * this.notationGroups[pickGroup].length);
 				}
-				scramble.push(this.notationGroups[pickGroup][pickCol]);
+				scramble += this.notationGroups[pickGroup][pickCol] + ' ';
 				beforeLastCol = lastCol;
 				lastCol = pickCol;
 
 			}
-			scrambles.push(scramble);
-			this.setState((state, _props) => (
-				{ currentScrambles: scrambles }
-			));
-			this.state.handler(scrambles[0]);
+			this.state.currentScrambles.push(scramble);
+			this.setState({currentScrambles: this.state.currentScrambles})
 		}
 	}
+
+	popScramble() {
+		let scramble = this.state.currentScrambles.pop();
+		let retScramble : string;
+		if(scramble) {
+			retScramble = scramble;
+		} else {
+			retScramble = '';
+		}
+		if(this.state.currentScrambles.length == 0) {
+			this.generate();
+		}
+		return retScramble;
+	}
 }
+
+export default ScrambleGeneratorComponent;

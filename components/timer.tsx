@@ -1,6 +1,4 @@
 import React from 'react';
-import $ from 'jquery';
-
 interface Props {
 	stopCallback : Function;
 }
@@ -18,10 +16,9 @@ interface State {
 	userInput: string;
 	validInput: boolean;
 	handler: Function;
-
 }
 
-export class Timer extends React.Component<Props, State> {
+export class TimerComponent extends React.Component<Props, State> {
 
 	timerID !: NodeJS.Timer | undefined;
 	private timerRef : React.RefObject<HTMLParagraphElement>;
@@ -66,7 +63,7 @@ export class Timer extends React.Component<Props, State> {
 	render() {
 		return (
 			<div className='select-none'>
-				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl sm:text-8xl md:text-9xl font-dseg7`}>
+				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl lg:text-9xl font-dseg7`}>
 					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.maskInput(this.state.userInput) : this.formatTime(this.state.time) }
 				</p>
 			</div>
@@ -76,7 +73,6 @@ export class Timer extends React.Component<Props, State> {
 	tick() {
 		if(this.state.running) {
 			let time = (this.state.inInspection ? this.state.endTime : Date.now()) - (!this.state.inInspection ? this.state.startTime : Date.now());
-			console.log(time);
 			let inInspection = this.state.inInspection;
 			let running = this.state.running;
 			let dnf = this.state.dnf;
@@ -163,7 +159,6 @@ export class Timer extends React.Component<Props, State> {
 	}
 
 	validateInput(input: string) {
-		console.log(input)
 		return /[0-5]{1}[0-9]{1}[0-5]{1}[0-9]{1}[0-9]{3}/.test(input)
 	}
 
@@ -177,7 +172,6 @@ export class Timer extends React.Component<Props, State> {
 		let bestTime = this.state.bestTime;
 		if(!running) {
 			if(!inInspection) {
-				console.log('start inspection');
 				startTime = Date.now();
 				endTime = Date.now() + 15000 ;
 				inInspection = true;
@@ -187,7 +181,6 @@ export class Timer extends React.Component<Props, State> {
 		} else {
 			if(inInspection) {
 				if(dnf) {
-					console.log('dnf');
 					dnf = false;
 					inInspection = false;
 					startTime = Date.now();
@@ -195,17 +188,13 @@ export class Timer extends React.Component<Props, State> {
 					running = true;
 				}
 				else {
-					console.log('end inspection');
 					inInspection = false;
 				}
 			} else {
-				console.log('stop timer');
 				running = false;
 				lastTime = this.state.time;
 				bestTime = bestTime > 0 ? lastTime < bestTime ? lastTime : bestTime : lastTime;
 				this.props.stopCallback.bind(this)(lastTime);
-				console.log(this.state.time);
-
 			}
 		}
 		this.setState((state, _props) => (

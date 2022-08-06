@@ -60,11 +60,12 @@ class ScrambleGeneratorComponent extends React.Component<Props, State> {
 	}
 
 	generate() {
+		let scrambles = new Array<string>();
 		for(let i = 0; i < this.props.numScrambles; i++) {
 			let lastCol = this.notationGroups[0].length;
 			let beforeLastCol = this.notationGroups[0].length;
 			let scramble = '';
-			for(let j = 0; j < 15; j++) {
+			for(let j = 0; j < 20; j++) {
 				let pickGroup = Math.floor(Math.random() * this.notationGroups.length);
 				let pickCol = Math.floor(Math.random() * this.notationGroups[pickGroup].length);
 				let isComutative = (lastCol / 2) == (beforeLastCol / 2);
@@ -74,11 +75,11 @@ class ScrambleGeneratorComponent extends React.Component<Props, State> {
 				scramble += this.notationGroups[pickGroup][pickCol] + ' ';
 				beforeLastCol = lastCol;
 				lastCol = pickCol;
-
+				
 			}
-			this.state.currentScrambles.push(scramble);
-			this.setState({currentScrambles: this.state.currentScrambles})
+			scrambles.push(scramble);
 		}
+		this.setState({currentScrambles: scrambles})
 	}
 
 	popScramble() {
@@ -92,7 +93,9 @@ class ScrambleGeneratorComponent extends React.Component<Props, State> {
 		if(this.state.currentScrambles.length == 0) {
 			this.generate();
 		}
+		this.setState({currentScrambles: this.state.currentScrambles});
 		return retScramble;
+
 	}
 }
 

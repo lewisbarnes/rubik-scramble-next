@@ -1,8 +1,8 @@
 import '../styles/globals.css'
 import '../styles/styles.css'
 import type { AppProps } from 'next/app'
-import NavMenuComponent from '../components/navMenu'
-import NavButton from '../components/navButton'
+import NavMenuComponent from '../components/nav/navMenu'
+import NavButton from '../components/nav/navButton'
 import { withRouter } from 'next/router'
 
 function MyApp({ Component, pageProps, ...appProps }: AppProps) {

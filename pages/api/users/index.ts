@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			} else if(req.method === 'POST'){
 				console.log(JSON.parse(req.body));
 				let sha256Hash : string;
-				sha256Hash = CryptoJS.SHA256(Date.now.toString()).toString();
+				sha256Hash = CryptoJS.SHA256(Date.now().toString()).toString();
 				console.log(sha256Hash);
 				let result = await db.collection('users').insertOne({name: '', hash: sha256Hash});
 				console.log(result);

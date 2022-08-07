@@ -1,5 +1,6 @@
 import { Solve } from './solve'
 import { averageTime } from '../utils/time';
+import Cookies from 'universal-cookie';
 
 export class SolveCollection {
 	solves: Array<Solve>;
@@ -22,7 +23,7 @@ export class SolveCollection {
 			return;
 		}
 		this.solves.reverse();
-		this.solves = this.solves.map((x, i) => {return new Solve(x.scramble, x.time, this.getAverage(5, i), this.getAverage(12, i), x._id)});
+		this.solves = this.solves.map((x, i) => {return new Solve(x.scramble, x.time, x.userHash, this.getAverage(5, i), this.getAverage(12, i), x._id)});
 		let lastSolve = this.solves[0];
 		if(lastSolve) {
 			this.currentAOFive = lastSolve.averageOfFive;
@@ -59,7 +60,7 @@ export class SolveCollection {
 	async addSolve(solve: Solve, toDB: boolean = false) {
 		this.solves.push(solve);
 		if(toDB) {
-			fetch('/api/solves', { method: 'POST', body: JSON.stringify(solve)});
+			fetch(`api/solves`, { method: 'POST', body: JSON.stringify(solve)});
 		}
 		this.calculateStatistics();
 		return this;

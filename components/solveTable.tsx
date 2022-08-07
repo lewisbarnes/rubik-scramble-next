@@ -1,25 +1,21 @@
 import React from 'react';
 import type  { Solve } from '../models/solve';
 import { SolveCollection } from '../models/solveCollection';
-import { getSolves } from '../utils/apiHelper';
+import RubikAPI from '../utils/rubikAPI';
 import { formatTime, averageTime } from '../utils/time';
-
-interface Props {
-	Data : Array<Solve>;
-}
 
 interface State {
 	solveData: SolveCollection;
 }
 
-export class SolveTable extends React.Component<Props, State> {
-	constructor(props: Props, state: State) {
+export class SolveTable extends React.Component<{}, State> {
+	constructor(props: {}, state: State) {
 		super(props);
-		this.state = {solveData:  new SolveCollection(this.props.Data)};
+		this.state = {solveData:  new SolveCollection(new Array<Solve>())};
 	}
 
-	componentDidMount() {
-		this.setState({solveData:  new SolveCollection(this.props.Data)});
+	async componentDidMount() {
+		this.setState({solveData:  new SolveCollection(await RubikAPI.Helper.findAllSolves())});
 	}
 	render() {
 		return (
@@ -30,9 +26,6 @@ export class SolveTable extends React.Component<Props, State> {
 							<div className='table-cell px-4 text-right'>time</div>
 							<div className='table-cell px-4 text-right'>ao5</div>
 							<div className='table-cell px-4 text-right'>ao12</div>
-
-							{/*<div className='table-cell px-4'>Scramble</div>*/}
-
 						</div>
 					</div>
 
@@ -43,9 +36,8 @@ export class SolveTable extends React.Component<Props, State> {
 							<div key={i.toString()} className='table-row'>
 								<div className='table-cell px-4 text-right'>{this.state.solveData.solves.length-i}</div>
 								<div className='table-cell px-4 whitespace-pre-wrap text-right'>{x.getFormattedTime()}</div>
-								{/*<div className='table-cell px-4 text-left whitespace-pre-wrap'>{x.scramble.slice(0,-1).split(' ').map((x) =>  { return x.trim().padEnd(4, ' '); })}</div>*/}
-								<div className='table-cell px-4 whitespace-pre-wrap text-right'>{formatTime(x.averageOfFive ? x.averageOfFive : 0)}</div>
-								<div className='table-cell px-4 whitespace-pre-wrap text-right'>{formatTime(x.averageOfTwelve ? x.averageOfTwelve : 0)}</div>
+								<div className='table-cell px-4 whitespace-pre-wrap text-right'>{x.getFormattedAO5()}</div>
+								<div className='table-cell px-4 whitespace-pre-wrap text-right'>{x.getFormattedAO12()}</div>
 
 							</div>);
 						}) : ''

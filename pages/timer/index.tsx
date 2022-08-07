@@ -1,16 +1,15 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Router from 'next/router'
 import React, { useRef } from 'react'
 import ScrambleGeneratorComponent from '../../components/scrambleGenerator'
 import { TimerComponent } from '../../components/timer'
 import { TimeStatsComponent } from '../../components/timeStats'
 import { Solve }  from '../../models/solve'
-import { SolveCollection } from '../../models/solveCollection'
 
-const Timer: NextPage<{ data : Array<Solve>}> = ({ data }) => {
+const Timer: NextPage = () => {
 	let scrambleGenerator =  useRef<ScrambleGeneratorComponent>(null);
 	let timeStat =  useRef<TimeStatsComponent>(null);
+
 	return (
 		<div className='max-w-full'>
 			<Head>
@@ -20,7 +19,7 @@ const Timer: NextPage<{ data : Array<Solve>}> = ({ data }) => {
 			<div className='flex flex-col items-center max-h-full text-center'>
 				<ScrambleGeneratorComponent ref={scrambleGenerator} numScrambles={25} hidden={false} displaySingle={true}/>
 				<TimerComponent stopCallback={timerStopCallback} />
-				<TimeStatsComponent key={data.length} Data={data} ref={timeStat}/>
+				<TimeStatsComponent key={1} ref={timeStat}/>
 			</div>
 		</div>
 	)
@@ -31,14 +30,9 @@ const Timer: NextPage<{ data : Array<Solve>}> = ({ data }) => {
 				scramble = scrambleGenerator.current.popScramble();
 			}
 			if(timeStat.current) {
-				timeStat.current.add(new Solve(scramble, time));
+				timeStat.current.add(new Solve(scramble, time, timeStat.current.state.userHash));
 			}
 	}
-}
-
-export async function getStaticProps() {
-	let solves = await (await fetch(process.env.SITE_URL + 'api/solves')).json();
-	return { props: { data: JSON.parse(JSON.stringify(solves)) } };
 }
 
 export default Timer

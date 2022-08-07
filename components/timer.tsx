@@ -44,7 +44,7 @@ export class TimerComponent extends React.Component<Props, State> {
 		this.timerRef = React.createRef<HTMLParagraphElement>();
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		document.addEventListener('keydown', this.handleKeydown.bind(this), false);
 		
 		this.timerRef.current?.addEventListener('click', this.startStop.bind(this), false);
@@ -112,6 +112,7 @@ export class TimerComponent extends React.Component<Props, State> {
 		else if(event.key == 'Enter') {
 			validInput = this.validateInput(userInput.padStart(7,'0'));
 			if(validInput) {
+				this.props.stopCallback(this.timeToMillisecondsFromString(userInput.padStart(7,'0')));
 				userInput = '';
 			}
 		}
@@ -212,6 +213,13 @@ export class TimerComponent extends React.Component<Props, State> {
 				validInput: state.validInput,
 			}
 		));
+	}
+
+	timeToMillisecondsFromString(timeString: string) {
+		let mins = parseInt(timeString.slice(0,2)) * (60 * 1000);
+		let secs = parseInt(timeString.slice(2,4)) * 1000;
+		let millis = parseInt(timeString.slice(4));
+		return mins + secs + millis;
 	}
 
 	formatTime(pMilliseconds : number) {

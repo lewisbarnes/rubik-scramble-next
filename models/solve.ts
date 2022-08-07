@@ -8,12 +8,14 @@ export class Solve {
 	time: number;
 	averageOfFive: number;
 	averageOfTwelve: number;
+	userHash: string;
 
-	constructor(scramble: string = '', time: number = 0, averageOfFive: number = 0, averageOfTwelve: number = 0, id?: ObjectId) {
+	constructor(scramble: string = '', time: number = 0, userHash = '', averageOfFive: number = 0, averageOfTwelve: number = 0, id?: ObjectId, ) {
 		this.scramble = scramble;
 		this.time = time;
 		this.averageOfFive = averageOfFive;
 		this.averageOfTwelve = averageOfTwelve;
+		this.userHash = userHash;
 		if(id) {
 			this._id = id;
 		}
@@ -21,5 +23,13 @@ export class Solve {
 
 	getFormattedTime() {
 		return formatTime(this.time);
+	}
+
+	getFormattedAO5() {
+		return formatTime(this.averageOfFive);
+	}
+
+	getFormattedAO12() {
+		return formatTime(this.averageOfTwelve);
 	}
 }

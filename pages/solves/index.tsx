@@ -3,8 +3,6 @@ import Head from "next/head";
 
 import { SolveTable } from "../../components/solveTable";
 import { Solve } from '../../models/solve';
-import { SolveCollection } from '../../models/solveCollection';
-import { getSolves } from '../../utils/apiHelper';
 
 const Solves: NextPage<{ data : Array<Solve>}> = ({ data }) => {
 	return (
@@ -15,16 +13,11 @@ const Solves: NextPage<{ data : Array<Solve>}> = ({ data }) => {
 			</Head>
 			<main>
 				<div className='flex flex-col items-center text-center'>
-					<SolveTable Data={data}/>
+					<SolveTable/>
 				</div>
 			</main>
 		</div>
 	)
-}
-
-export async function getStaticProps() {
-	let solves = await (await fetch(process.env.SITE_URL + 'api/solves')).json();
-	return { props: { data: JSON.parse(JSON.stringify(solves)) } };
 }
 
 export default Solves;

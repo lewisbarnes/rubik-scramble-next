@@ -77,10 +77,11 @@ export class TimerComponent extends React.Component<Props, State> {
 			let inInspection = this.state.inInspection;
 			let running =  this.state.running == true;
 			let dnf = this.state.dnf;
-			if(time <= 0) {
+			if(inInspection && time <= 0) {
 				dnf = true;
 				running = false;
 				inInspection = false;
+				clearInterval(this.timerID);
 			}
 			
 			this.setState((state, props) => (

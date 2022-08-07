@@ -1,4 +1,5 @@
 import React from 'react';
+import { inspect } from 'util';
 interface Props {
 	stopCallback : Function;
 }
@@ -71,13 +72,15 @@ export class TimerComponent extends React.Component<Props, State> {
 	}
 
 	tick() {
-		if(this.state.running) {
+		if(this.state.running == true) {
 			let time = (this.state.inInspection ? this.state.endTime : Date.now()) - (!this.state.inInspection ? this.state.startTime : Date.now());
 			let inInspection = this.state.inInspection;
-			let running = this.state.running;
+			let running =  this.state.running == true;
 			let dnf = this.state.dnf;
 			if(time <= 0) {
 				dnf = true;
+				running = false;
+				inInspection = false;
 			}
 			
 			this.setState((state, props) => (
@@ -183,7 +186,7 @@ export class TimerComponent extends React.Component<Props, State> {
 			if(inInspection) {
 				if(dnf) {
 					dnf = false;
-					inInspection = false;
+					inInspection = true;
 					startTime = Date.now();
 					endTime = Date.now() + 15000 ;
 					running = true;

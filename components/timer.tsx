@@ -190,6 +190,7 @@ export class TimerComponent extends React.Component<Props, State> {
 				}
 				else {
 					inInspection = false;
+					startTime = Date.now();
 				}
 			} else {
 				running = false;

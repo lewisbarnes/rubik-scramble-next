@@ -1,6 +1,7 @@
 import { Solve } from './solve'
 import { averageTime } from '../utils/time';
 import Cookies from 'universal-cookie';
+import RubikAPI from '../utils/rubikAPI';
 
 export class SolveCollection {
 	solves: Array<Solve>;
@@ -23,11 +24,11 @@ export class SolveCollection {
 			return;
 		}
 		this.solves.reverse();
-		this.solves = this.solves.map((x, i) => {return new Solve(x.scramble, x.time, x.userHash, this.getAverage(5, i), this.getAverage(12, i), x._id)});
+		this.solves = this.solves.map((x, i) => {return new Solve(x.scramble, x.time, x.method, this.getAverage(5, i), this.getAverage(12, i), x._id)});
 		let lastSolve = this.solves[0];
 		if(lastSolve) {
-			this.currentAOFive = lastSolve.averageOfFive;
-			this.currentAOTwelve = lastSolve.averageOfTwelve;
+			this.currentAOFive = lastSolve.AO5;
+			this.currentAOTwelve = lastSolve.AO12;
 			this.lastTime = lastSolve.time;
 
 			let sortedSolves = this.solves.slice();
@@ -57,11 +58,8 @@ export class SolveCollection {
 		this.solves = this.solves.map((x) => { let temp = new Solve(); Object.assign(temp, x); return temp});
 	}
 
-	async addSolve(solve: Solve, toDB: boolean = false) {
+	async addSolve(solve: Solve) {
 		this.solves.push(solve);
-		if(toDB) {
-			fetch(`api/solves`, { method: 'POST', body: JSON.stringify(solve)});
-		}
 		this.calculateStatistics();
 		return this;
 	}

@@ -11,14 +11,15 @@ function MyApp({ Component, pageProps, ...appProps }: AppProps) {
       <div className='dark:text-white dark:bg-black h-full max-h-full overflow-y-auto'>
         <Component {...pageProps} />
       </div>
-      <div className='dark:text-white dark:bg-black border-black border-t-8 pb-4 border-solid font-fira md:flex md:flex-col items-center'>
+      <div className='dark:text-white mt-8 pb-8 font-fira md:flex md:flex-col items-center'>
         <NavMenuComponent>
-          <NavButton label='timer' routes={['/timer']} />
-          <NavButton label='solves' routes={['/solves']}/>
-          <NavButton label='scrambles' routes={['/scrambles']} />
-          <NavButton label='help' routes={['/help']}/>
-          <NavButton label='settings' routes={['/settings']}/>
-          <NavButton label='about' routes={['/about']}/>
+			<NavButton label='home' route='/'/>
+          	<NavButton label='timer' route='/timer'/>
+          	<NavButton label='solves' route='/solves'/>
+          	<NavButton label='scrambles' route='/scrambles'/>
+          	<NavButton label='help' route='/help'/>
+          	<NavButton label='settings' route='/settings'/>
+          	<NavButton label='about' route='/about'/>
         </NavMenuComponent>
       </div>
     </div>

@@ -1,10 +1,16 @@
-import type { NextPage } from 'next'
+import type { NextPage, NextPageContext } from 'next'
 import Head from "next/head";
 
 import { SolveTable } from "../../components/solveTable";
 import { Solve } from '../../models/solve';
+import RubikAPI from '../../utils/rubikAPI';
 
-const Solves: NextPage<{ data : Array<Solve>}> = ({ data }) => {
+interface Props {
+	footprint: string;
+	solveData: Array<Solve>;
+}
+
+const Solves: NextPage<Props> = ({ footprint, solveData }) => {
 	return (
 		<div>
 			<Head>
@@ -13,11 +19,20 @@ const Solves: NextPage<{ data : Array<Solve>}> = ({ data }) => {
 			</Head>
 			<main>
 				<div className='flex flex-col items-center text-center'>
-					<SolveTable/>
+					<SolveTable footprint={footprint} data={solveData}/>
 				</div>
 			</main>
 		</div>
 	)
+}
+
+export async function getServerSideProps(ctx: NextPageContext) {
+	let footprint = await RubikAPI.Helper.getFootprint(ctx);
+	let solveData;
+	if(footprint) {
+		solveData = await RubikAPI.Helper.findAllSolves(footprint);
+	}
+	return {props: { footprint, solveData }};
 }
 
 export default Solves;

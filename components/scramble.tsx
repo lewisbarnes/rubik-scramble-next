@@ -15,8 +15,8 @@ export class ScrambleComponent extends React.Component<Props, State> {
 
 	render() {
 		return (
-			<div className='hover:select-all whitespace-pre-wrap'>
-				<div className={ `${this.props.hidden ? 'hidden ' : ''} font-fira text-base dark:text-white md:text-md mb-2`}>{(this.props.moves.split(' ').map(x => x.padEnd(3, ' ')).join(''))}</div>
+			<div className='hover:select-all whitespace-pre-wrap text-center md:text-start'>
+				<div className={ `${this.props.hidden ? 'hidden ' : ''} font-fira text-base dark:text-white md:text-md mb-2`}>{(this.props.moves.split(' ').map(x => x.padEnd(3, ' ')).join('').trimEnd())}</div>
 			</div>
 		);
 	}

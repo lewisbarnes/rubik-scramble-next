@@ -1,10 +1,10 @@
 import { NextPage } from "next";
 import Head from "next/head";
 import { useRef } from "react";
-import ScrambleGeneratorComponent from "../../components/scrambleGenerator";
+import ScrambleList from "../../components/scrambleList";
 
 const Scrambles: NextPage = () => {
-	let scrambleGenerator =  useRef<ScrambleGeneratorComponent>(null);
+	let scrambleList =  useRef<ScrambleList>(null);
 	return (
 		<div className='max-w-full'>
 			<Head>
@@ -12,7 +12,7 @@ const Scrambles: NextPage = () => {
 				<meta name="description" content="A timer for 3x3 twisty puzzles" />
 			</Head>
 			<div className='flex flex-col items-center max-h-full text-center'>
-				<ScrambleGeneratorComponent ref={scrambleGenerator} numScrambles={25} hidden={false} displaySingle={false}/>
+				<ScrambleList ref={scrambleList} hidden={false} displaySingle={false}/>
 			</div>
 		</div>
 	)

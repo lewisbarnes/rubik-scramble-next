@@ -8,14 +8,15 @@ interface State {
 	solveData: SolveCollection;
 }
 
-export class SolveTable extends React.Component<{}, State> {
-	constructor(props: {}, state: State) {
-		super(props);
-		this.state = {solveData:  new SolveCollection(new Array<Solve>())};
-	}
+interface Props {
+	footprint: string;
+	data: Array<Solve>;
+}
 
-	async componentDidMount() {
-		this.setState({solveData:  new SolveCollection(await RubikAPI.Helper.findAllSolves())});
+export class SolveTable extends React.Component<Props, State> {
+	constructor(props: Props, state: State) {
+		super(props);
+		this.state = {solveData:  new SolveCollection(this.props.data)};
 	}
 	render() {
 		return (
@@ -31,7 +32,6 @@ export class SolveTable extends React.Component<{}, State> {
 
 					{
 						this.state.solveData.solves.length > 0 ? this.state.solveData.solves.map((x,i) => {
-							
 							return (
 							<div key={i.toString()} className='table-row'>
 								<div className='table-cell px-4 text-right'>{this.state.solveData.solves.length-i}</div>

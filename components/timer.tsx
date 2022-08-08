@@ -19,7 +19,7 @@ interface State {
 	handler: Function;
 }
 
-export class TimerComponent extends React.Component<Props, State> {
+class TimerComponent extends React.Component<Props, State> {
 
 	timerID !: NodeJS.Timer | undefined;
 	private timerRef : React.RefObject<HTMLParagraphElement>;
@@ -65,7 +65,7 @@ export class TimerComponent extends React.Component<Props, State> {
 		return (
 			<div className='select-none'>
 				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl lg:text-9xl font-dseg7`}>
-					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.maskInput(this.state.userInput) : this.formatTime(this.state.time) }
+					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.formatTime(this.timeToMillisecondsFromString(this.state.userInput.padStart(7,'0'))) : this.formatTime(this.state.time) }
 				</p>
 			</div>
 		);
@@ -116,7 +116,7 @@ export class TimerComponent extends React.Component<Props, State> {
 		else if(event.key == 'Enter') {
 			validInput = this.validateInput(userInput.padStart(7,'0'));
 			if(validInput) {
-				this.props.stopCallback(this.timeToMillisecondsFromString(userInput.padStart(7,'0')));
+				this.props.stopCallback(this.timeToMillisecondsFromString(userInput.padStart(7,'0')),'manual-input');
 				userInput = '';
 			}
 		}
@@ -159,10 +159,6 @@ export class TimerComponent extends React.Component<Props, State> {
 		));
 	}
 
-	maskInput(input: string) {
-		return input.padStart(7,'0').replace(/(\d{2})(\d{2})(\d{3})/, '$1:$2.$3');
-	}
-
 	validateInput(input: string) {
 		return /[0-5]{1}[0-9]{1}[0-5]{1}[0-9]{1}[0-9]{3}/.test(input)
 	}
@@ -182,7 +178,7 @@ export class TimerComponent extends React.Component<Props, State> {
 				inInspection = true;
 			}
 			running = true;
-			this.timerID = setInterval(this.tick.bind(this), 10);
+			this.timerID = setInterval(this.tick.bind(this), 100);
 		} else {
 			if(inInspection) {
 				if(dnf) {
@@ -200,7 +196,7 @@ export class TimerComponent extends React.Component<Props, State> {
 				running = false;
 				lastTime = this.state.time;
 				bestTime = bestTime > 0 ? lastTime < bestTime ? lastTime : bestTime : lastTime;
-				this.props.stopCallback.bind(this)(lastTime);
+				this.props.stopCallback.bind(this)(lastTime,'timer');
 			}
 		}
 		this.setState((state, _props) => (
@@ -221,13 +217,13 @@ export class TimerComponent extends React.Component<Props, State> {
 	}
 
 	timeToMillisecondsFromString(timeString: string) {
-		let mins = parseInt(timeString.slice(0,2)) * (60 * 1000);
-		let secs = parseInt(timeString.slice(2,4)) * 1000;
-		let millis = parseInt(timeString.slice(4));
+		let mins = parseInt(timeString.slice(0,2),10) * (60 * 1000);
+		let secs = parseInt(timeString.slice(2,4),10) * 1000;
+		let millis = parseInt(timeString.slice(4),10);
 		return mins + secs + millis;
 	}
 
-	formatTime(pMilliseconds : number) {
+	formatTime(pMilliseconds : number) {8
 		let timeString: string = '';
 		timeString += Math.floor(((pMilliseconds / 1000) / 60)) >= 1 ? `${Math.floor(((pMilliseconds / 1000) / 60)).toString().padStart(2,'0')}:` : '';
 		timeString +=  Math.floor(((pMilliseconds / 1000) % 60)) >= 1 ? `${Math.floor(((pMilliseconds / 1000) % 60)).toString().padStart(2,'0')}.` : '00.';
@@ -235,3 +231,5 @@ export class TimerComponent extends React.Component<Props, State> {
 		return timeString;
 	}
 }
+
+export default TimerComponent;

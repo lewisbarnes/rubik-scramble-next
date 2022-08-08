@@ -1,13 +1,20 @@
-import type { NextPage } from 'next'
+import type { NextPage, NextPageContext } from 'next'
 import Head from 'next/head'
 import React, { useRef } from 'react'
-import ScrambleGeneratorComponent from '../../components/scrambleGenerator'
-import { TimerComponent } from '../../components/timer'
+import ScrambleList from '../../components/scrambleList'
+import TimerComponent from '../../components/timer'
 import { TimeStatsComponent } from '../../components/timeStats'
 import { Solve }  from '../../models/solve'
+import RubikAPI from '../../utils/rubikAPI'
+import Cookies from 'universal-cookie';
 
-const Timer: NextPage = () => {
-	let scrambleGenerator =  useRef<ScrambleGeneratorComponent>(null);
+interface Props {
+	footprint: string;
+	solveData: Array<Solve>;
+}
+
+const Timer: NextPage<Props> = ({ footprint, solveData }) => {
+	let scrambleGenerator =  useRef<ScrambleList>(null);
 	let timeStat =  useRef<TimeStatsComponent>(null);
 
 	return (
@@ -17,22 +24,33 @@ const Timer: NextPage = () => {
 				<meta name="description" content="A timer for 3x3 twisty puzzles" />
 			</Head>
 			<div className='flex flex-col items-center max-h-full text-center'>
-				<ScrambleGeneratorComponent ref={scrambleGenerator} numScrambles={25} hidden={false} displaySingle={true}/>
-				<TimerComponent stopCallback={timerStopCallback} />
-				<TimeStatsComponent key={1} ref={timeStat}/>
+				<ScrambleList key={1} ref={scrambleGenerator} hidden={false} displaySingle={true}/>
+				<TimerComponent key={1} stopCallback={timerStopCallback} />
+				<TimeStatsComponent key={1} footprint={footprint} data={solveData} ref={timeStat}/>
 			</div>
 		</div>
 	)
 
-	async function timerStopCallback(time: number) {
-			let scramble = ''
-			if(scrambleGenerator.current) {
-				scramble = scrambleGenerator.current.popScramble();
-			}
-			if(timeStat.current) {
-				timeStat.current.add(new Solve(scramble, time, timeStat.current.state.userHash));
-			}
+	async function timerStopCallback(time: number, method: string) {
+		let scramble = '';
+		if(scrambleGenerator.current) {
+			scramble = scrambleGenerator.current.nextScramble();
+		}
+		if(timeStat.current) {
+			let solve = new Solve(scramble, time, method);
+			RubikAPI.Helper.addSolve(solve, footprint);
+			timeStat.current.add(solve);
+		}
 	}
+}
+
+export async function getServerSideProps(ctx: NextPageContext) {
+	let footprint = await RubikAPI.Helper.getFootprint(ctx);
+	let solveData;
+	if(footprint) {
+		solveData = await RubikAPI.Helper.findAllSolves(footprint);
+	}
+	return {props: { footprint, solveData }};
 }
 
 export default Timer

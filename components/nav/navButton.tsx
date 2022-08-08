@@ -4,7 +4,7 @@ import React from 'react';
 interface Props {
 	label: string;
 	router: NextRouter;
-	routes: Array<string>;
+	route: string;
 }
 
 class NavButton extends React.Component<Props> {
@@ -23,9 +23,9 @@ class NavButton extends React.Component<Props> {
 
 	render() {
 		return(
-			<a href={this.props.routes[0]} className={
-				`${this.props.routes.some(x => x == this.props.router.pathname) ? 'bg-black dark:bg-white text-white dark:text-black' : 
-				''} rounded-md px-2`}>{this.props.label}</a>
+			<a href={this.props.route} className={
+				`${this.props.route == this.props.router.pathname ? 'bg-black dark:bg-white text-white dark:text-black' : 
+				''} rounded-md md:px-2`}>{this.props.label}</a>
 		);
 	}
 }

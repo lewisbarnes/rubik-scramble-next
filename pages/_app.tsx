@@ -10,9 +10,12 @@ function MyApp({ Component, pageProps, ...appProps }: AppProps) {
   return (
     <div className='bg-gradient-to-b from-gray-800 bg-scroll to-black h-screen w-screen flex flex-col pt-4 font-fira lowercase'>
       <div className='text-white h-full max-h-full overflow-y-auto'>
+	  	<div className='w-full text-center'>
+			{process.env.NODE_ENV == 'development' ? 'DEVELOPMENT ENVIRONMENT' : ''}
+		</div>
         <Component {...pageProps} />
       </div>
-      <div className='text-white mt-8 pb-8 font-fira md:flex md:flex-col items-center'>
+      <div className='text-white mt-4 pb-4 font-fira md:flex md:flex-col items-center'>
         <NavMenuComponent>
 			<NavButton label='home' route='/'/>
           	<NavButton label='timer' route='/timer'/>

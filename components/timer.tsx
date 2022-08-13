@@ -19,6 +19,8 @@ interface State {
 	handler: Function;
 }
 
+const inspectionTime : number = 15000;
+
 class TimerComponent extends React.Component<Props, State> {
 
 	timerID !: NodeJS.Timer | undefined;
@@ -28,7 +30,7 @@ class TimerComponent extends React.Component<Props, State> {
 		super(props);
 		this.state = {
 			startTime: Date.now(),
-			endTime: Date.now() + 15000,
+			endTime: Date.now() + inspectionTime,
 			time: 0,
 			lastTime: 0,
 			bestTime: 0,
@@ -64,9 +66,17 @@ class TimerComponent extends React.Component<Props, State> {
 	render() {
 		return (
 			<div className='select-none'>
-				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-8xl font-dseg7`}>
-					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.formatTime(this.timeToMillisecondsFromString(this.state.userInput.padStart(7,'0'))) : this.formatTime(this.state.time) }
+				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800 font-fira uppercase' : 'font-dseg7 '} ${this.state.validInput ? '' : 'text-red-800'} text-8xl md:text-[10rem] pb-4`}>
+					{ this.state.dnf ? 'DNS' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.formatTime(this.timeToMillisecondsFromString(this.state.userInput.padStart(7,'0'))) : this.formatTime(this.state.time) }
 				</p>
+				{/* <div className={`flex flex-row justify-center space-x-2 ${this.state.running || this.state.time == 0 ? 'opacity-30 pointer-events-none' : ''}`}>
+					<button>
+						{'+2'}
+					</button>
+					<button>
+						dnf
+					</button>
+				</div> */}
 			</div>
 		);
 	}
@@ -174,24 +184,18 @@ class TimerComponent extends React.Component<Props, State> {
 		if(!running) {
 			if(!inInspection) {
 				startTime = Date.now();
-				endTime = Date.now() + 15000 ;
+				endTime = Date.now() + inspectionTime ;
 				inInspection = true;
+				if(dnf) {
+					dnf = false;
+				}
 			}
 			running = true;
 			this.timerID = setInterval(this.tick.bind(this), 100);
 		} else {
 			if(inInspection) {
-				if(dnf) {
-					dnf = false;
-					inInspection = true;
-					startTime = Date.now();
-					endTime = Date.now() + 15000 ;
-					running = true;
-				}
-				else {
-					inInspection = false;
-					startTime = Date.now();
-				}
+				inInspection = false;
+				startTime = Date.now();
 			} else {
 				running = false;
 				lastTime = this.state.time;

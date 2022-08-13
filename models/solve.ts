@@ -26,7 +26,7 @@ export class Solve {
 	}
 
 	get AO12() {
-		return this.averageOfFive;
+		return this.averageOfTwelve;
 	}
 
 	getFormattedTime() {

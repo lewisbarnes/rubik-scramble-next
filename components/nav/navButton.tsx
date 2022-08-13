@@ -24,8 +24,8 @@ class NavButton extends React.Component<Props> {
 	render() {
 		return(
 			<a href={this.props.route} className={
-				`${this.props.route == this.props.router.pathname ? 'bg-black dark:bg-white text-white dark:text-black' : 
-				''} rounded-md md:px-2`}>{this.props.label}</a>
+				`${this.props.route == this.props.router.pathname ? 'bg-white text-black' : 
+				''} transition-transform transform-gpu rounded-md md:px-2 ease-in-out`}>{this.props.label}</a>
 		);
 	}
 }

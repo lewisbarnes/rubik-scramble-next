@@ -64,7 +64,7 @@ class TimerComponent extends React.Component<Props, State> {
 	render() {
 		return (
 			<div className='select-none'>
-				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-6xl lg:text-9xl font-dseg7`}>
+				<p ref={this.timerRef} className={`${this.state.inInspection ? 'text-green-600' : ''} ${this.state.dnf ? 'text-red-800' : ''} ${this.state.validInput ? '' : 'text-red-800'} text-8xl font-dseg7`}>
 					{ this.state.dnf ? 'DNF' : this.state.running ? this.formatTime(this.state.time) : this.state.userInput.length > 0 ? this.formatTime(this.timeToMillisecondsFromString(this.state.userInput.padStart(7,'0'))) : this.formatTime(this.state.time) }
 				</p>
 			</div>

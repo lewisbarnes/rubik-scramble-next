@@ -4,14 +4,15 @@ import type { AppProps } from 'next/app'
 import NavMenuComponent from '../components/nav/navMenu'
 import NavButton from '../components/nav/navButton'
 import { withRouter } from 'next/router'
+import version from '../package.json';
 
 function MyApp({ Component, pageProps, ...appProps }: AppProps) {
   return (
-    <div className='dark:bg-black h-screen w-screen flex flex-col pt-4 font-fira'>
-      <div className='dark:text-white dark:bg-black h-full max-h-full overflow-y-auto'>
+    <div className='bg-gradient-to-b from-gray-800 bg-scroll to-black h-screen w-screen flex flex-col pt-4 font-fira lowercase'>
+      <div className='text-white h-full max-h-full overflow-y-auto'>
         <Component {...pageProps} />
       </div>
-      <div className='dark:text-white mt-8 pb-8 font-fira md:flex md:flex-col items-center'>
+      <div className='text-white mt-8 pb-8 font-fira md:flex md:flex-col items-center'>
         <NavMenuComponent>
 			<NavButton label='home' route='/'/>
           	<NavButton label='timer' route='/timer'/>

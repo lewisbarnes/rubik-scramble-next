@@ -38,7 +38,7 @@ class ScrambleList extends React.Component<Props, State> {
 
 	render() {
 		return (
-			<div className={`px-6 pb-6 flex flex-col ${this.props.hidden ? 'hidden': ''}`}>
+			<div className={`px-6 pb-6 flex flex-col uppercase ${this.props.hidden ? 'hidden': ''}`}>
 					{
 						this.props.displaySingle ? <ScrambleComponent key={1} moves={ this.state.currentScrambles[0] ? this.state.currentScrambles[0] : '' } hidden={this.props.hidden} /> :
 						this.state.currentScrambles.slice().map((scramble, i) => {

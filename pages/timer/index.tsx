@@ -18,12 +18,12 @@ const Timer: NextPage<Props> = ({ footprint, solveData }) => {
 	let timeStat =  useRef<TimeStatsComponent>(null);
 
 	return (
-		<div className='max-w-full'>
+		<div className='max-w-full h-full '>
 			<Head>
 				<title>rubik-scramble : timer</title>
 				<meta name="description" content="A timer for 3x3 twisty puzzles" />
 			</Head>
-			<div className='flex flex-col items-center max-h-full text-center'>
+			<div className='flex flex-col items-center h-full place-content-center text-center'>
 				<ScrambleList key={1} ref={scrambleGenerator} hidden={false} displaySingle={true}/>
 				<TimerComponent key={1} stopCallback={timerStopCallback} />
 				<TimeStatsComponent key={1} footprint={footprint} data={solveData} ref={timeStat}/>

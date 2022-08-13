@@ -17,7 +17,7 @@ class NavMenuComponent extends React.Component<Props, State> {
 
 	render() {
 		return(
-			<div className='font-fira max-h-full flex flex-col md:flex-row flex-wrap px-32 text-center'>
+			<div className='font-fira max-h-full flex flex-col md:flex-row flex-wrap px-32 text-center '>
 				<button className='md:hidden pb-2' onClick={this.hide.bind(this)}>{this.state.isHidden ? 'unhide' : 'hide'}</button>
 				{this.state.isHidden ? '' : this.props.children}
 			</div>

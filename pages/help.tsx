@@ -2,10 +2,10 @@ import { NextPage } from "next"
 
 export const Help : NextPage = () => {
 	return (
-		<main className='font-fira flex flex-col items-center'>
-			<p className='mb-4'>{'{space}'} to start/stop timer</p>
-			<p className='mb-4'>{'{number}'} to enter time manually, the following regex is matched {'\'/[0-5]{1}[0-9]{1}[0-5]{1}[0-9]{1}[0-9]{3}/\''}</p>
-			<p className='mb-4'>{'{enter}'} to submit manually input time</p>
+		<main className='font-fira flex h-full flex-col items-center space-y-4 place-content-center'>
+			<p className=''>{'{space}'} to start/stop timer</p>
+			<p className=''>{'{number}'} to enter time manually</p>
+			<p className=''>{'{enter}'} to submit manually input time</p>
 		</main>
 	)
 }
